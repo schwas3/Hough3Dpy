@@ -11,7 +11,7 @@ import numpy as np
 
 class PointCloud:
     def __init__(self,points=np.zeros((4,3))):
-        self.shift = 0
+        self.shift = np.zeros(3)
         self.points = points
     def shiftToOrigin(self):
         points = self.points
