@@ -21,4 +21,4 @@ To-do:
 - Optimize code by using list indices instead of lists.
   - Rather than initialize `X` and remove candidate points in `Y` from `X`, include a boolean flag in `X` and `Y` (`X` init to all `1` and `Y` to all `0`) and perhaps make the flag a line index in `Y` (would instead init `Y` to all `-1` and assign line index as they are found)?
   - ?
-- ?
+- **Remove sphere.py in favor of sphere.dat - a set of pregenerated vertices, will be useful when Hough3D-py is implemented as a step in production**
