@@ -24,6 +24,7 @@ To-do:
 - **Remove sphere.py in favor of sphere.dat - a set of pregenerated vertices, will be useful when Hough3D-py is implemented as a step in production**
   - `sphere.py` benchmark testing
   - `sphere.dat` file?
+  - EDIT: should be able to remove useless triangles
 
 ----
 Overview
