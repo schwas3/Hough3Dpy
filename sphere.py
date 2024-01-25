@@ -16,9 +16,10 @@ Modified from:
 # Removing triangles in makeUnique() seems COMPLETELY unecessary - this would only be needed if you wanted to implement something like the line directly above, but even still this is not quite what you'd want
 # Cont. - this is not quite right because you want to remove triangles with all vertices to be cut, but this will still be only something like a factor of 2x faster
 
-import numpy as np
-import pickle as pkl
 import os
+import pickle as pkl
+
+import numpy as np
 
 # also optimizable
 

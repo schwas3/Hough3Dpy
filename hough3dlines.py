@@ -9,9 +9,11 @@ MODIFIED FROM:
 '''
 
 import math
+
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.linalg import eigh
+
 from sphere import sphere_vertices
 
 # NOTE: It may be better to fix opt_dx based on a singular application of the TPC - right now it is based on the extremes of the pointCloud but it may be better served to 
