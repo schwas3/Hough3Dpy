@@ -22,17 +22,18 @@ import os
 
 # also optimizable
 
-def sphereVertices(subDivisions=4,returnVertsAndTriangles=False,saveToFile=True,saveToFile_name='sphere.pkl'):
-  if saveToFile and os.path.exists(saveToFile_name):
-    with open(saveToFile_name,'rb') as f:
+def sphere_vertices(subdivisions=4,return_verts_and_triangles=False,save_to_file=True,save_to_file_name='sphere.pkl'):
+  """Generate sphere vertices"""
+  if save_to_file and os.path.exists(save_to_file_name):
+    with open(save_to_file_name,'rb') as f:
       sphere_dict = pkl.load(f)
     vertices,triangles = sphere_dict['vertices'][-1], sphere_dict['triangles'][-1]
     granularity = len(sphere_dict['vertices']) - 1
-    if granularity >= subDivisions:
-      if returnVertsAndTriangles:
-        return sphere_dict['vertices'][subDivisions],sphere_dict['triangles'][subDivisions]
+    if granularity >= subdivisions:
+      if return_verts_and_triangles:
+        return sphere_dict['vertices'][subdivisions],sphere_dict['triangles'][subdivisions]
       else:
-        return sphere_dict['uniqueVertices'][subDivisions]
+        return sphere_dict['unique_vertices'][subdivisions]
   else:
     tau = 1.61803399; # golden_ratio
     norm = (1 + tau * tau)**.5
@@ -40,11 +41,11 @@ def sphereVertices(subDivisions=4,returnVertsAndTriangles=False,saveToFile=True,
     tau = tau / norm
     vertices = [[-v,tau,0],[v,tau,0],[0,v,-tau],[0,v,tau],[-tau,0,-v],[tau,0,-v],[-tau,0,v],[tau,0,v],[0,-v,-tau],[0,-v,tau],[-v,-tau,0],[v,-tau,0]]
     triangles = [[0,1,2],[0,1,3],[0,2,4],[0,4,6],[0,3,6],[1,2,5],[1,3,7],[1,5,7],[2,4,8],[2,5,8],[3,6,9],[3,7,9],[4,8,10],[8,10,11],[5,8,11],[5,7,11],[7,9,11],[9,10,11],[6,9,10],[4,6,10]]
-    if saveToFile:
-      uniqueVertices = [vert for vert in vertices if not (vert[2] < 0 or (vert[2] == 0 and vert[0] < 0) or (vert[2] == 0 == vert[0] and vert[1] == -1))]
-      sphere_dict = {'uniqueVertices':[uniqueVertices],'vertices':[vertices],'triangles':[triangles]}
+    if save_to_file:
+      unique_vertices = [vert for vert in vertices if not (vert[2] < 0 or (vert[2] == 0 and vert[0] < 0) or (vert[2] == 0 == vert[0] and vert[1] == -1))]
+      sphere_dict = {'unique_vertices':[unique_vertices],'vertices':[vertices],'triangles':[triangles]}
     granularity = 0
-  while granularity < subDivisions:
+  while granularity < subdivisions:
     granularity += 1
     triangles2 = []
     for ai,bi,ci in triangles:
@@ -75,19 +76,19 @@ def sphereVertices(subDivisions=4,returnVertsAndTriangles=False,saveToFile=True,
         vertices += [f]
       triangles2 += [[ai,di,fi],[di,bi,ei],[fi,ei,ci],[fi,di,ei]]
     triangles = triangles2[:]
-    if saveToFile:
+    if save_to_file:
       sphere_dict['vertices'] += [vertices]
       sphere_dict['triangles'] += [triangles]
-      sphere_dict['uniqueVertices'] += [[vert for vert in vertices if not (vert[2] < 0 or (vert[2] == 0 and vert[0] < 0) or (vert[2] == 0 == vert[0] and vert[1] == -1))]]
-  if saveToFile:
-    with open(saveToFile_name,'wb') as f:
+      sphere_dict['unique_vertices'] += [[vert for vert in vertices if not (vert[2] < 0 or (vert[2] == 0 and vert[0] < 0) or (vert[2] == 0 == vert[0] and vert[1] == -1))]]
+  if save_to_file:
+    with open(save_to_file_name,'wb') as f:
       pkl.dump(sphere_dict,f)
-    if returnVertsAndTriangles:
-      return sphere_dict['vertices'][subDivisions],sphere_dict['triangles'][subDivisions]
+    if return_verts_and_triangles:
+      return sphere_dict['vertices'][subdivisions],sphere_dict['triangles'][subdivisions]
     else:
-      return sphere_dict['uniqueVertices'][subDivisions]
+      return sphere_dict['unique_vertices'][subdivisions]
   else:
-    if returnVertsAndTriangles:
+    if return_verts_and_triangles:
       return vertices,triangles
     else:
       return [vert for vert in vertices if not (vert[2] < 0 or (vert[2] == 0 and vert[0] < 0) or (vert[2] == 0 == vert[0] and vert[1] == -1))]
@@ -100,7 +101,7 @@ if __name__ == "__main__":
   import matplotlib.pyplot as plt
   fig = plt.figure()
   ax = fig.add_subplot(projection='3d')
-  vertices = sphereVertices(6)
+  vertices = sphere_vertices(6)
   print(len(vertices))
   # vertices, triangles = sphereVertices(7,True)
   # vertices = np.array(vertices)
