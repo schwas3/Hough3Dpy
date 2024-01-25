@@ -17,15 +17,35 @@ Modified from:
 # Cont. - this is not quite right because you want to remove triangles with all vertices to be cut, but this will still be only something like a factor of 2x faster
 
 import numpy as np
+import pickle as pkl
+import os
 
-def sphereVertices(subDivisions=4,returnTriangles=False):
-  tau = 1.61803399; # golden_ratio
-  norm = (1 + tau * tau)**.5
-  v = 1 / norm
-  tau = tau / norm
-  vertices = [[-v,tau,0],[v,tau,0],[0,v,-tau],[0,v,tau],[-tau,0,-v],[tau,0,-v],[-tau,0,v],[tau,0,v],[0,-v,-tau],[0,-v,tau],[-v,-tau,0],[v,-tau,0]]
-  triangles = triangles2 = [[0,1,2],[0,1,3],[0,2,4],[0,4,6],[0,3,6],[1,2,5],[1,3,7],[1,5,7],[2,4,8],[2,5,8],[3,6,9],[3,7,9],[4,8,10],[8,10,11],[5,8,11],[5,7,11],[7,9,11],[9,10,11],[6,9,10],[4,6,10]]
-  for i in range(subDivisions):
+# also optimizable
+
+def sphereVertices(subDivisions=4,returnVertsAndTriangles=False,saveToFile=True,saveToFile_name='sphere.pkl'):
+  if saveToFile and os.path.exists(saveToFile_name):
+    with open(saveToFile_name,'rb') as f:
+      sphere_dict = pkl.load(f)
+    vertices,triangles = sphere_dict['vertices'][-1], sphere_dict['triangles'][-1]
+    granularity = len(sphere_dict['vertices']) - 1
+    if granularity >= subDivisions:
+      if returnVertsAndTriangles:
+        return sphere_dict['vertices'][subDivisions],sphere_dict['triangles'][subDivisions]
+      else:
+        return sphere_dict['uniqueVertices'][subDivisions]
+  else:
+    tau = 1.61803399; # golden_ratio
+    norm = (1 + tau * tau)**.5
+    v = 1 / norm
+    tau = tau / norm
+    vertices = [[-v,tau,0],[v,tau,0],[0,v,-tau],[0,v,tau],[-tau,0,-v],[tau,0,-v],[-tau,0,v],[tau,0,v],[0,-v,-tau],[0,-v,tau],[-v,-tau,0],[v,-tau,0]]
+    triangles = [[0,1,2],[0,1,3],[0,2,4],[0,4,6],[0,3,6],[1,2,5],[1,3,7],[1,5,7],[2,4,8],[2,5,8],[3,6,9],[3,7,9],[4,8,10],[8,10,11],[5,8,11],[5,7,11],[7,9,11],[9,10,11],[6,9,10],[4,6,10]]
+    if saveToFile:
+      uniqueVertices = [vert for vert in vertices if not (vert[2] < 0 or (vert[2] == 0 and vert[0] < 0) or (vert[2] == 0 == vert[0] and vert[1] == -1))]
+      sphere_dict = {'uniqueVertices':[uniqueVertices],'vertices':[vertices],'triangles':[triangles]}
+    granularity = 0
+  while granularity < subDivisions:
+    granularity += 1
     triangles2 = []
     for ai,bi,ci in triangles:
       # this section can likely be optimized
@@ -55,20 +75,24 @@ def sphereVertices(subDivisions=4,returnTriangles=False):
         vertices += [f]
       triangles2 += [[ai,di,fi],[di,bi,ei],[fi,ei,ci],[fi,di,ei]]
     triangles = triangles2[:]
-  if returnTriangles:
-    return vertices,triangles2
-  for vert in vertices[:]:
-    if vert[2] < 0:
-      vertices.remove(vert)
-    elif vert[2] == 0:
-      if vert[0] < 0:
-        vertices.remove(vert)
-      elif vert[0] == 0 and vert[1] == -1:
-        vertices.remove(vert)
-  return vertices
+    if saveToFile:
+      sphere_dict['vertices'] += [vertices]
+      sphere_dict['triangles'] += [triangles]
+      sphere_dict['uniqueVertices'] += [[vert for vert in vertices if not (vert[2] < 0 or (vert[2] == 0 and vert[0] < 0) or (vert[2] == 0 == vert[0] and vert[1] == -1))]]
+  if saveToFile:
+    with open(saveToFile_name,'wb') as f:
+      pkl.dump(sphere_dict,f)
+    if returnVertsAndTriangles:
+      return sphere_dict['vertices'][subDivisions],sphere_dict['triangles'][subDivisions]
+    else:
+      return sphere_dict['uniqueVertices'][subDivisions]
+  else:
+    if returnVertsAndTriangles:
+      return vertices,triangles
+    else:
+      return [vert for vert in vertices if not (vert[2] < 0 or (vert[2] == 0 and vert[0] < 0) or (vert[2] == 0 == vert[0] and vert[1] == -1))]
 
 if __name__ == "__main__":
-
   # demonstrates sphere.py when ran
   # to be added - runLine arguments to allow for customization of granularity
   # to be added - runLine arguments to allow for customization of out file name
@@ -76,23 +100,23 @@ if __name__ == "__main__":
   import matplotlib.pyplot as plt
   fig = plt.figure()
   ax = fig.add_subplot(projection='3d')
-  vertices = sphereVertices(4,False)
-  -print(len(vertices))
-  vertices, triangles = sphereVertices(subDivisions=2,returnTriangles=True)
-  vertices = np.array(vertices)
-  # print(len(triangles))
-  # print(vertices)
-  # ax.
-  # for i in range(3): 
-  #   ax=fig.add_subplot(1,3,i+1,projection='3d')
-  # ax.scatter(vertices[:,0])
-  # for a,b,c in vertices:
-  #   ax.scatter(a,b,c,alpha=0.1)
-  for triangle in triangles:
-    verts = np.array(vertices)[triangle]
-    # print(verts)
-    ax.plot3D(verts[:,0],verts[:,1],verts[:,2],c='r')
-  # ax.scatter(vertices[:,0],vertices[:,1],vertices[:,2],alpha=1)
-  plt.savefig('test.png')
-  # for i in [0,2,4]:
-
+  vertices = sphereVertices(6)
+  print(len(vertices))
+  # vertices, triangles = sphereVertices(7,True)
+  # vertices = np.array(vertices)
+  # # print(len(triangles))
+  # print(len(vertices))
+  # # ax.
+  # # for i in range(3): 
+  # #   ax=fig.add_subplot(1,3,i+1,projection='3d')
+  # # ax.scatter(vertices[:,0])
+  # # for a,b,c in vertices:
+  # #   ax.scatter(a,b,c,alpha=0.1)
+  # for triangle in triangles:
+  #   verts = np.array(vertices)[triangle]
+  #   # print(verts)
+  #   ax.scatter(verts[:,0],verts[:,1],verts[:,2],c='r',s=1)
+  #   ax.plot(verts[:,0],verts[:,1],verts[:,2],c='r')
+  # # ax.scatter(vertices[:,0],vertices[:,1],vertices[:,2],alpha=1)
+  # plt.savefig('test.png')
+  # # for i in [0,2,4]:
