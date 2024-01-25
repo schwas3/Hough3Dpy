@@ -6,10 +6,7 @@ Christoph Dalitz, Tilman Schramke, and Manuel Jeltsch, Iterative Hough Transform
 The exact performance of the code has been modifed to be application specific and NOT exactly replicate the behavior of the source code.
 
 -----
-
-Code is currently written to require manual changing of input parameters in `hough3dlines.py` (and in other files??). The output is textbased only, `python hough3dlines.py > output_file.out` will produce output to a file.
-
-To-do:
+To-do?:
 - Output points in lines (either ID's or lists of points or ? maybe some intergration with flow is possible?)
 - Output confidence values? i.e. eigenvalues or LSQ-fit value to identify line strengths? (Note: this is obtainable with a description of a line and list of points, resource scope exceeded?)
 - Add energy dependent functionalities? Not likely, but could have minEnergy? Again, this likely exceeds the scope of this resource.
