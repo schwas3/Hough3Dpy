@@ -190,7 +190,7 @@ def hough3d(point_cloud=[],opt_dx=0,sphere_granularity=4,opt_nlines=0,opt_minvot
   return output
 
 if __name__ == '__main__':
-  output = hough3d(point_cloud=np.array([[1.01,2,3],[1,2.01,4],[1,2,5]]),infile_name='t',return_num_points=True,return_line_params=True,return_points=True,return_indices=True,save_test_vis_fig=True,test_vis_fig_file_name='testVis5_0.png',sphere_granularity=4,opt_verbose=1,opt_minvotes=2)
+  output = hough3d(infile_name='test.dat',return_num_points=True,return_line_params=True,return_points=True,return_indices=True,save_test_vis_fig=True,test_vis_fig_file_name='testVis5_0.png',sphere_granularity=4,opt_verbose=0)
   if len(output.keys())==0:print('output is empty');exit()
   for i in output.keys():
     print(i)
