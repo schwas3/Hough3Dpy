@@ -22,17 +22,18 @@ from sphere import sphere_vertices
 def hough3d(point_cloud=[],opt_dx=0,sphere_granularity=4,opt_nlines=0,opt_minvotes=10,opt_verbose=0,infile_name='',return_num_points=True,return_line_params=False,return_indices=True,return_points=False,save_test_vis_fig=False,test_vis_fig_file_name = 'testVis.png'):
   """Main Run Call"""
   # Plausibility checks
-  if point_cloud and infile_name:print('Manually points and a file name cannot both be passed to hough3d!');return
-  if opt_dx < 0:print('opt_dx < 0');return
-  if opt_nlines < 0:print('opt_nlines < 0');return
-  if opt_minvotes < 0:print('opt_minvotes < 0');return
-  if 0 < opt_minvotes < 2:print('opt_minvotes < 2 (must be >= 2)');return
+  point_cloud = np.array(point_cloud,np.float64)
+  if len(point_cloud) and infile_name:print('Manual points and a file name cannot both be passed to hough3d!');return{}
+  if opt_dx < 0:print('opt_dx < 0');return{}
+  if opt_nlines < 0:print('opt_nlines < 0');return{}
+  if opt_minvotes < 0:print('opt_minvotes < 0');return{}
+  if 0 < opt_minvotes < 2:print('opt_minvotes < 2 (must be >= 2)');return{}
   if infile_name:
     try:
       point_cloud = np.loadtxt(infile_name,delimiter=',')
       if opt_verbose >= 1:print(f'Loaded {len(point_cloud)} points from file')
-    except:print(f'Cannot open infile {infile_name}');return
-    if len(point_cloud) < 2:print('point cloud has less than two points');return
+    except:print(f'Cannot open infile {infile_name}');return{}
+    if len(point_cloud) < 2:print('point cloud has less than two points');return{}
   
   X = point_cloud # Initiatize action PointCloud X
   # point_cloud = list(point_cloud) # Will later allow for pointCloud.index() to be used easily
@@ -167,15 +168,15 @@ def hough3d(point_cloud=[],opt_dx=0,sphere_granularity=4,opt_nlines=0,opt_minvot
       p1 = Y + shift
       ax.scatter(p1[:,0],p1[:,1],p1[:,2])
   X += shift
-  output = []
+  output = {}
   if return_num_points:
-    output += [num_points]
+    output['num_points'] = num_points
   if return_line_params:
-    output += [line_params]
+    output['line_params'] = line_params
   if return_points:
-    output += [points]
+    output['points'] = points
   if return_indices:
-    output += [indices]
+    output['indices'] = indices
   if save_test_vis_fig:
     ax.scatter(X[:,0],X[:,1],X[:,2],c='black')
     # cax = fig.add_axes([0.9, 0.5, 0.05, 0.2])
@@ -189,7 +190,9 @@ def hough3d(point_cloud=[],opt_dx=0,sphere_granularity=4,opt_nlines=0,opt_minvot
   return output
 
 if __name__ == '__main__':
-  *output, = hough3d(infile_name='test.dat',return_num_points=True,return_line_params=True,return_points=True,return_indices=True,save_test_vis_fig=True,test_vis_fig_file_name='testVis5_0.png',sphere_granularity=4,opt_verbose=1)
-  for i in output:
-    print(*i,sep='\n')
+  output = hough3d(point_cloud=np.array([[1.01,2,3],[1,2.01,4],[1,2,5]]),infile_name='t',return_num_points=True,return_line_params=True,return_points=True,return_indices=True,save_test_vis_fig=True,test_vis_fig_file_name='testVis5_0.png',sphere_granularity=4,opt_verbose=1,opt_minvotes=2)
+  if len(output.keys())==0:print('output is empty');exit()
+  for i in output.keys():
+    print(i)
+    [print(j)for j in output[i]]
     print()
