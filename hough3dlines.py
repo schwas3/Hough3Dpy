@@ -133,7 +133,7 @@ def hough3d(point_cloud=[],opt_dx=0,sphere_granularity=4,opt_nlines=0,opt_minvot
 
     Y = points_close_to_line(X,a,b,dx) # Select points close to Heuristic line 2
     nvotes = len(Y)
-    if nvotes < opt_minvotes:print('nvotes < opt_minvotes',nvotes,opt_minvotes);break # End loop if nvotes is less than opt_minvotes
+    if opt_verbose >= 1 and nvotes < opt_minvotes:print('nvotes < opt_minvotes',nvotes,opt_minvotes);break # End loop if nvotes is less than opt_minvotes
 
     rc,a,b = orthogonal_lsq(Y) # Perform OLS fit on selected points to best describe the line
 
