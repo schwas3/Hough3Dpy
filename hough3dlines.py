@@ -19,7 +19,7 @@ from sphere import sphere_vertices
 # NOTE: It may be better to fix opt_dx based on a singular application of the TPC - right now it is based on the extremes of the pointCloud but it may be better served to 
 # NOTE: It is more robust to allow the caller of hough3d to plot the points / grouped points / lines manually based on the return rather than having a robust set of plotting parameters
 
-def hough3d(point_cloud=[],opt_dx=0,sphere_granularity=4,opt_nlines=0,opt_minvotes=10,opt_verbose=0,infile_name='',return_num_points=True,return_line_params=False,return_indices=True,return_points=False,save_test_vis_fig=False,test_vis_fig_file_name = 'testVis.png'):
+def hough3d(point_cloud=[],opt_dx=0,sphere_granularity=4,opt_nlines=0,opt_minvotes=10,opt_verbose=0,infile_name='',return_num_points=True,return_line_params=False,return_indices=True,return_points=False,return_leftover_points=False,save_test_vis_fig=False,test_vis_fig_file_name = 'testVis.png'):
   """Main Run Call"""
   # Plausibility checks
   point_cloud = np.array(point_cloud,np.float64)
@@ -95,7 +95,8 @@ def hough3d(point_cloud=[],opt_dx=0,sphere_granularity=4,opt_nlines=0,opt_minvot
         x_p = (1-b[0]**2*beta)*x[0] - b[0]*b[1]*beta*x[1] - b[0]*x[2]
         y_p = -b[0]*b[1]*x[0] + (1-b[1]**2*beta)*x[1] -b[1]*x[2]
         x_p_ind, y_p_ind = round(x_p/dx)+index_shift_n, round(y_p/dx)+index_shift_n
-        A[b_ind,x_p_ind,y_p_ind] += c
+        try:A[b_ind,x_p_ind,y_p_ind] += c
+        except:pass
 
   A = np.zeros((len(B),lattice_side_length_anchor_points,lattice_side_length_anchor_points)) # Accumulator Array A, |B| X |X'| X |Y'| 
 
@@ -175,6 +176,8 @@ def hough3d(point_cloud=[],opt_dx=0,sphere_granularity=4,opt_nlines=0,opt_minvot
     output['line_params'] = line_params
   if return_points:
     output['points'] = points
+  if return_leftover_points:
+    output['leftover_points'] = X
   if return_indices:
     output['indices'] = indices
   if save_test_vis_fig:
@@ -190,7 +193,7 @@ def hough3d(point_cloud=[],opt_dx=0,sphere_granularity=4,opt_nlines=0,opt_minvot
   return output
 
 if __name__ == '__main__':
-  output = hough3d(infile_name='test.dat',return_num_points=True,return_line_params=True,return_points=True,return_indices=True,save_test_vis_fig=True,test_vis_fig_file_name='testVis5_0.png',sphere_granularity=4,opt_verbose=0)
+  output = hough3d(infile_name='test.dat',return_num_points=True,return_line_params=True,return_points=True,return_leftover_points=False,return_indices=True,save_test_vis_fig=True,test_vis_fig_file_name='testVis5_0.png',sphere_granularity=4,opt_verbose=0)
   if len(output.keys())==0:print('output is empty');exit()
   for i in output.keys():
     print(i)
